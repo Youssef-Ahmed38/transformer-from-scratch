@@ -1,0 +1,57 @@
+{
+  "provenance": {
+    "time_utc": "2026-10-30T21:41:37+00:00",
+    "commit": null,
+    "uncommitted_changes": false,
+    "python": "3.12.4",
+    "torch": "2.11.0+cu128",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+    "checkpoint": "checkpoints/run/best.pt",
+    "checkpoint_step": 3500,
+    "tokens": 200
+  },
+  "prompt": "def ",
+  "runs": [
+    {
+      "model": "transformer",
+      "temperature": 0.5,
+      "samples": 500,
+      "complete_pct": 9.4,
+      "valid_pct": 0.0,
+      "valid_of_complete_pct": 0.0,
+      "valid_multiline": 0,
+      "copied_from_train": 0
+    },
+    {
+      "model": "transformer",
+      "temperature": 0.8,
+      "samples": 500,
+      "complete_pct": 28.2,
+      "valid_pct": 0.8,
+      "valid_of_complete_pct": 2.8,
+      "valid_multiline": 2,
+      "copied_from_train": 0
+    },
+    {
+      "model": "transformer",
+      "temperature": 1.0,
+      "samples": 500,
+      "complete_pct": 37.6,
+      "valid_pct": 1.0,
+      "valid_of_complete_pct": 2.7,
+      "valid_multiline": 3,
+      "copied_from_train": 0
+    },
+    {
+      "model": "bigram",
+      "temperature": 0.8,
+      "samples": 500,
+      "complete_pct": 67.8,
+      "valid_pct": 0.0,
+      "valid_of_complete_pct": 0.0,
+      "valid_multiline": 0,
+      "copied_from_train": 0
+    }
+  ]
+}

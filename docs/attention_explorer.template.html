@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attention Explorer</title>
+<style>
+:root { --bg: #fcfcfb; --ink: #0b0b0b; --muted: #52514e; --line: #e4e3de; --chip: #f1efe8; --accent: #2a78d6; --accent-rgb: 42, 120, 214; --on-accent: #ffffff; }
+@media (prefers-color-scheme: dark) { :root { --bg: #1a1a19; --ink: #f0efec; --muted: #c3c2b7; --line: #3a3a37; --chip: #2a2a28; --accent: #3987e5; --accent-rgb: 57, 135, 229; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 "Segoe UI", system-ui, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 32px 16px 56px; }
+h1 { font-size: 26px; font-weight: 600; margin: 0 0 4px; }
+p { color: var(--muted); margin: 0 0 20px; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 18px; }
+.controls span { color: var(--muted); font-size: 14px; margin-right: 4px; }
+button { font: inherit; font-size: 14px; color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 8px; padding: 5px 13px; cursor: pointer; }
+button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+#code { font: 18px/1.9 Consolas, "SF Mono", monospace; border: 1px solid var(--line); border-radius: 12px; padding: 20px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.token { all: unset; cursor: pointer; border-radius: 4px; white-space: pre-wrap; outline-offset: 1px; }
+.token:focus-visible { outline: 2px solid var(--accent); }
+.token.query { outline: 2px solid var(--accent); }
+#top { margin-top: 20px; }
+.row { display: grid; grid-template-columns: minmax(90px, 170px) 1fr 58px; gap: 12px; align-items: center; font-size: 14px; padding: 3px 0; }
+.row code { font-family: Consolas, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.track { height: 9px; background: var(--chip); border-radius: 4px; overflow: hidden; }
+.track i { display: block; height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; }
+.row b { font-weight: 400; text-align: right; font-variant-numeric: tabular-nums; }
+footer { margin-top: 24px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Attention explorer</h1>
+  <p>Select a token to see which earlier tokens the trained model looks at. Stronger color means more attention. Later tokens stay blank, because the mask hides the future.</p>
+  <div class="controls" id="layers"><span>Layer</span></div>
+  <div id="code"></div>
+  <div id="top" aria-live="polite"></div>
+  <footer id="note"></footer>
+</main>
+<script>
+const demo = __DATA__;
+const code = document.getElementById("code");
+const layersEl = document.getElementById("layers");
+const ranking = document.getElementById("top");
+const shown = (t) => t.replace(/\n/g, "\\n").replace(/ /g, "\u00b7");
+let layer = demo.layers.length - 1;
+let query = demo.tokens.indexOf(" items", 8) > 0 ? demo.tokens.indexOf(" items", 8) : demo.tokens.length - 1;
+
+const chips = demo.tokens.map((token, i) => {
+  const chip = document.createElement("button");
+  chip.className = "token";
+  chip.textContent = token;
+  chip.setAttribute("aria-label", "Token " + shown(token));
+  chip.addEventListener("click", () => { query = i; render(); });
+  chip.addEventListener("mouseenter", () => { query = i; render(); });
+  chip.addEventListener("focus", () => { query = i; render(); });
+  code.append(chip);
+  return chip;
+});
+
+demo.layers.forEach((_, i) => {
+  const button = document.createElement("button");
+  button.textContent = i + 1;
+  button.addEventListener("click", () => { layer = i; render(); });
+  layersEl.append(button);
+});
+
+function render() {
+  const weights = demo.layers[layer][query];
+  const peak = Math.max(...weights);
+  chips.forEach((chip, i) => {
+    chip.classList.toggle("query", i === query);
+    const alpha = i > query ? 0 : weights[i] / peak;
+    chip.style.background = `rgba(var(--accent-rgb), ${(alpha * 0.8).toFixed(3)})`;
+  });
+  [...layersEl.querySelectorAll("button")].forEach((b, i) => b.setAttribute("aria-pressed", i === layer));
+  const ranked = weights.map((w, i) => [w, i]).filter(([, i]) => i <= query).sort((a, b) => b[0] - a[0]).slice(0, 5);
+  ranking.innerHTML = "";
+  ranked.forEach(([w, i]) => {
+    const row = document.createElement("div");
+    row.className = "row";
+    const label = document.createElement("code");
+    label.textContent = shown(demo.tokens[i]);
+    const track = document.createElement("div");
+    track.className = "track";
+    const fill = document.createElement("i");
+    fill.style.width = (w / peak * 100).toFixed(1) + "%";
+    track.append(fill);
+    const value = document.createElement("b");
+    value.textContent = (w * 100).toFixed(1) + "%";
+    row.append(label, track, value);
+    ranking.append(row);
+  });
+}
+
+document.getElementById("note").textContent = demo.note;
+render();
+</script>
+</body>
+</html>

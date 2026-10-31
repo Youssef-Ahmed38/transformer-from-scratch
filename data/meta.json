@@ -1,0 +1,18 @@
+{
+  "source": "Python 3.12.4 standard library",
+  "vocab_size": 4096,
+  "tokenizer_train_seconds": 76.7,
+  "train": {
+    "files": 490,
+    "chars": 9581579,
+    "tokens": 3092570
+  },
+  "val": {
+    "files": 46,
+    "chars": 979587,
+    "tokens": 317984
+  },
+  "chars_per_token": 3.1,
+  "uniform_loss": 8.318,
+  "bigram_val_loss": 4.056
+}

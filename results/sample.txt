@@ -1,0 +1,17 @@
+def read_config(path):
+    return codecs.gettext(path) is not None
+
+def environ(environ):
+    return environ.gettext('PATH') is deprecated as from CGI PATH
+
+def environ(environ):
+    return environment
+
+# Return the environment variables
+# ""
+
+# This module contains the default for the pATH environment
+_DEPRECATED_VALUE_FUNCATED_VALUE_FUNC_MESSAGE
+
+def venv(environ=None):
+    """Return the environment variable

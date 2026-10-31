@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+data/*.bin
+checkpoints/
+!data/meta.json
+!data/tokenizer.json
